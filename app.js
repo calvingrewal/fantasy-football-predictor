@@ -18,7 +18,8 @@ async function getData(q, until) {
 }
 
 app.get('/', async (req, res) => {
-  const data = await getData('alex+smith', '2017-10-06') 
+  const { player, until } = req.query
+  const data = await getData(player, until) 
   const tweets = data.data.statuses.map(tweet => ({
     text: tweet.text,
     id: tweet.id,
