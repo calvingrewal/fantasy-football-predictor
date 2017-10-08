@@ -52,6 +52,13 @@ app.get('/', async (req, res) => {
   })
 })
 
+app.get('/tweets', (req, res) => {
+  fs.readFile('tweets.json', 'utf8', (err, data) => {
+    json = JSON.parse(data)
+    res.json(json)
+  })
+})
+
 app.get('/status', async (req, res) => {
   const status = await T.get('application/rate_limit_status', {resources:'search'})
   res.json(status)
