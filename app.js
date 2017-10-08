@@ -14,6 +14,10 @@ const T = new Twit({
 const app = express()
 
 async function getData(q, until) {
+  if (!q || !until) {
+    throw new Error('No query or until date provided')
+    return
+  }
   const data = await T.get('search/tweets', { q, until, count: 100, result_type: 'popular'})
   return data
 }
@@ -26,7 +30,7 @@ app.get('/', async (req, res) => {
     id: tweet.id,
     date: tweet['created_at']
   }))
-
+   
   return res.json({
     tweets
   })
