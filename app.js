@@ -1,6 +1,7 @@
 require('dotenv').config()
 const { CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET } = process.env
 const express = require('express')
+const players = require('./players')
 const Twit = require('twit')
 
 const T = new Twit({
