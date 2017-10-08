@@ -22,33 +22,40 @@ async function getData(q, until) {
   const data = await T.get('search/tweets', { q, until, count: 100, result_type: 'popular'})
   return data
 }
+app.get('/', (req, res) => {
+  res.redirect('/tweets')
+})
+app.get('/scrape', async (req, res) => {
+  for (let i = 0;i < players.length; i++) {
+    const player = players[i]
+    const until = '2017-10-08'
 
-app.get('/', async (req, res) => {
-  const { player, until } = req.query
-  const data = await getData(player, until) 
-  const tweets = data.data.statuses.map(tweet => ({
-    text: tweet.text,
-    id: tweet.id,
-    date: tweet['created_at']
-  }))
-  fs.readFile('tweets.json', 'utf8', (err, data) => {
-    if (err) {
-      console.log('error reading tweets json', err)
-    } else {
-      existing = data.length ? JSON.parse(data) : {}
-      existing[player] = {
-        lastFetched: Date.now(),
-        tweets
+    const data = await getData(player, until) 
+    const tweets = data.data.statuses.map(tweet => ({
+      text: tweet.text,
+      id: tweet.id,
+      date: tweet['created_at']
+    }))
+
+    fs.readFile('tweets.json', 'utf8', (err, data) => {
+      if (err) {
+        console.log('error reading tweets json', err)
+      } else {
+        existing = data.length ? JSON.parse(data) : {}
+        existing[player] = {
+          lastFetched: Date.now(),
+          tweets
+        }
+
+        json = JSON.stringify(existing)
+        fs.writeFile('tweets.json', json, 'utf8', (err, data) => {
+          if (err) console.log('error writing to tweets json', err)
+        })
       }
-
-      json = JSON.stringify(existing)
-      fs.writeFile('tweets.json', json, 'utf8', (err, data) => {
-	if (err) console.log('error writing to tweets json', err)
-      })
-    }
-  }) 
-  return res.json({
-    tweets
+    }) 
+  }
+  res.json({
+    success: '?'
   })
 })
 
