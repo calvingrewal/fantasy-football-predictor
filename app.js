@@ -1,6 +1,7 @@
 require('dotenv').config()
 const { CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_SECRET } = process.env
 const express = require('express')
+const fs = require('fs')
 const players = require('./players')
 const Twit = require('twit')
 
@@ -30,7 +31,22 @@ app.get('/', async (req, res) => {
     id: tweet.id,
     date: tweet['created_at']
   }))
-   
+  fs.readFile('tweets.json', 'utf8', (err, data) => {
+    if (err) {
+      console.log('error reading tweets json', err)
+    } else {
+      existing = data.length ? JSON.parse(data) : {}
+      existing[player] = {
+        lastFetched: Date.now(),
+        tweets
+      }
+
+      json = JSON.stringify(existing)
+      fs.writeFile('tweets.json', json, 'utf8', (err, data) => {
+	if (err) console.log('error writing to tweets json', err)
+      })
+    }
+  }) 
   return res.json({
     tweets
   })
