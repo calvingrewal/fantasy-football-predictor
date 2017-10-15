@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 app.get('/scrape', async (req, res) => {
   for (let i = 0;i < players.length; i++) {
     const player = players[i]
-    const until = '2017-10-08'
+    const until = '2017-10-15'
 
     const data = await getData(player, until) 
     const tweets = data.data.statuses.map(tweet => ({
@@ -37,7 +37,9 @@ app.get('/scrape', async (req, res) => {
       date: tweet['created_at']
     }))
 
-    fs.readFile('tweets.json', 'utf8', (err, data) => {
+    const filename = 'tweets2.json'
+    
+    fs.readFile(filename, 'utf8', (err, data) => {
       if (err) {
         console.log('error reading tweets json', err)
       } else {
@@ -48,7 +50,7 @@ app.get('/scrape', async (req, res) => {
         }
 
         json = JSON.stringify(existing)
-        fs.writeFile('tweets.json', json, 'utf8', (err, data) => {
+        fs.writeFile(filename, json, 'utf8', (err, data) => {
           if (err) console.log('error writing to tweets json', err)
         })
       }
@@ -60,7 +62,7 @@ app.get('/scrape', async (req, res) => {
 })
 
 app.get('/tweets', (req, res) => {
-  fs.readFile('tweets.json', 'utf8', (err, data) => {
+  fs.readFile('tweets2.json', 'utf8', (err, data) => {
     json = JSON.parse(data)
     res.json(json)
   })
